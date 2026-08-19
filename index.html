@@ -3,74 +3,548 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cloud Movie Tier List</title>
+  <title>CineTier • Movie Tier List</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: #121212; color: #fff; padding: 16px; display: flex; flex-direction: column; align-items: center; }
-    
-    .sync-bar { display: flex; gap: 8px; width: 100%; max-width: 850px; background: #1c1c1c; padding: 12px; border-radius: 8px; margin-bottom: 12px; align-items: center; border: 1px solid #333; }
-    .search-bar { display: flex; gap: 8px; width: 100%; max-width: 850px; margin-bottom: 16px; }
-    
-    input[type="text"] { flex: 1; padding: 10px 14px; border-radius: 6px; border: 1px solid #444; background: #242424; color: white; font-size: 15px; }
-    button { padding: 10px 18px; background: #e50914; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; }
-    button.sync-btn { background: #2f80ed; }
-    button:hover { opacity: 0.9; }
 
-    .status-text { width: 100%; max-width: 850px; font-size: 13px; color: #aaa; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-    .results-container { display: flex; gap: 10px; overflow-x: auto; width: 100%; max-width: 850px; min-height: 115px; background: #181818; padding: 10px; border-radius: 8px; margin-bottom: 16px; border: 1px dashed #444; align-items: center; }
+  <style>
+    :root {
+      --bg-dark: #0f1015;
+      --card-bg: #181a20;
+      --card-border: #262933;
+      --accent-red: #ff334b;
+      --accent-glow: rgba(255, 51, 75, 0.25);
+      --text-main: #f3f4f6;
+      --text-muted: #8b92a5;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(255, 51, 75, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(47, 128, 237, 0.08) 0px, transparent 50%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 1300px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Top Navigation */
+    header {
+      position: relative;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 16px 24px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      min-height: 68px;
+    }
+
+    .brand {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .brand span {
+      background: linear-gradient(135deg, #ff334b, #ff7a00);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .auth-badge {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .user-pill {
+      font-size: 13px;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+    }
+
+    .status-dot.offline {
+      background: #f59e0b;
+      box-shadow: 0 0 8px #f59e0b;
+    }
+
+    /* Buttons */
+    button {
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 14px;
+      padding: 10px 18px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #ff334b, #e50914);
+      color: #fff;
+      box-shadow: 0 4px 16px var(--accent-glow);
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(255, 51, 75, 0.4); }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      color: #f3f4f6;
+      border: 1px solid var(--card-border);
+    }
+    .btn-secondary:hover { background: rgba(255, 255, 255, 0.12); }
+
+    /* Content Layout */
+    .content-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 20px;
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      header {
+        flex-direction: column;
+        gap: 12px;
+        padding: 16px;
+      }
+      .brand {
+        position: static;
+        transform: none;
+      }
+      .content-layout {
+        grid-template-columns: 1fr;
+      }
+    }
 
     /* Tier Board */
-    .tier-board { width: 100%; max-width: 850px; border: 3px solid #222; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; gap: 2px; background: #1a1a1a; }
-    .tier-row { display: flex; min-height: 105px; background: #262626; }
-    .tier-label { width: 80px; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 800; color: #111; user-select: none; flex-shrink: 0; }
-    .tier-dropzone { flex: 1; display: flex; flex-wrap: wrap; gap: 8px; padding: 8px; min-height: 105px; align-items: center; }
+    .tier-board {
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      background: #121318;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+    }
 
-    .s-tier { background: #ff4747; } .a-tier { background: #ff9f43; } .b-tier { background: #fed330; }
-    .c-tier { background: #26de81; } .d-tier { background: #2bcbba; } .e-tier { background: #a55eea; } .f-tier { background: #ff52d9; }
+    .tier-row {
+      display: flex;
+      min-height: 105px;
+      background: var(--card-bg);
+    }
 
-    .poster-card { width: 65px; height: 95px; object-fit: cover; border-radius: 4px; cursor: grab; user-select: none; }
-    .poster-card:active { opacity: 0.5; }
-    .drag-over { background: #383838 !important; }
+    .tier-label {
+      width: 85px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      font-weight: 800;
+      color: #0c0d12;
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    .tier-dropzone {
+      flex: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 10px 14px;
+      min-height: 105px;
+      align-items: center;
+    }
+
+    /* Tier Gradients */
+    .s-tier { background: linear-gradient(135deg, #ff4e50, #f9d423); }
+    .a-tier { background: linear-gradient(135deg, #ff9966, #ff5e62); }
+    .b-tier { background: linear-gradient(135deg, #f7971e, #ffd200); }
+    .c-tier { background: linear-gradient(135deg, #56ab2f, #a8e063); }
+    .d-tier { background: linear-gradient(135deg, #00c6ff, #0072ff); }
+    .e-tier { background: linear-gradient(135deg, #8a2387, #e94057); }
+    .f-tier { background: linear-gradient(135deg, #ec008c, #fc6767); }
+
+    /* Right Sidebar Panel */
+    .sidebar-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .search-section {
+      display: flex;
+      gap: 8px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 8px;
+      border-radius: 14px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .search-section input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 14px;
+      padding-left: 10px;
+      min-width: 0;
+    }
+
+    .search-section input::placeholder { color: var(--text-muted); }
+
+    /* Single-Tap Info Section */
+    .info-card-wrapper {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .info-card-header {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+    }
+
+    .info-card-content {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .info-card-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.2;
+    }
+
+    .info-card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .badge {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    .badge-year {
+      background: var(--accent-red);
+      color: #fff;
+    }
+
+    .badge-genre {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      border: 1px solid var(--card-border);
+    }
+
+    /* Dynamic Auto-Expanding Tray */
+    .tray-wrapper {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .tray-header {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .results-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-content: flex-start;
+      min-height: 120px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      padding: 10px;
+      border: 1px dashed var(--card-border);
+    }
+
+    /* Poster Card */
+    .poster-card {
+      width: 62px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 6px;
+      cursor: grab;
+      user-select: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+    }
+
+    .poster-card:hover {
+      transform: translateY(-3px) scale(1.04);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+    }
+
+    .poster-card:active {
+      cursor: grabbing;
+      opacity: 0.5;
+    }
+
+    .drag-over {
+      background: rgba(255, 255, 255, 0.05) !important;
+    }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      padding: 16px;
+    }
+
+    .modal-card {
+      background: #181a20;
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 420px;
+      padding: 24px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .modal-card h3 { font-size: 20px; font-weight: 800; }
+    .modal-card p { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+    .modal-card input {
+      background: #101116;
+      border: 1px solid var(--card-border);
+      padding: 12px 14px;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 15px;
+      outline: none;
+    }
+
+    .modal-card input:focus { border-color: var(--accent-red); }
+
+    /* Movie Detail Modal */
+    .movie-detail-card {
+      display: flex;
+      gap: 18px;
+    }
+    .detail-poster {
+      width: 110px;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+    .detail-info {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .detail-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.2;
+    }
+    .detail-meta {
+      font-size: 13px;
+      color: var(--accent-red);
+      font-weight: 700;
+    }
+    .detail-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .detail-plot {
+      font-size: 13px;
+      color: #d1d5db;
+      line-height: 1.4;
+      margin-top: 4px;
+      max-height: 120px;
+      overflow-y: auto;
+    }
   </style>
 </head>
 <body>
 
-  <!-- Cloud Sync Bar -->
-  <div class="sync-bar">
-    <span style="font-size: 14px; font-weight: bold; white-space: nowrap;">Sync Key:</span>
-    <input type="text" id="syncKeyInput" placeholder="Choose a passkey (e.g. febi-movies-77)" />
-    <button class="sync-btn" onclick="syncWithCloud()">Connect Cloud</button>
+  <div class="app-container">
+    
+    <!-- Top Navigation -->
+    <header>
+      <div class="brand">
+        <span>CineTier</span>
+      </div>
+      <div class="auth-badge">
+        <div class="user-pill" id="userPill">
+          <div class="status-dot offline" id="statusDot"></div>
+          <span id="userDisplayName">Guest (Local)</span>
+        </div>
+        <button class="btn-secondary" id="authBtn" onclick="toggleAuthModal(true)">Sign In</button>
+      </div>
+    </header>
+
+    <!-- Main Grid -->
+    <div class="content-layout">
+
+      <!-- Left: Tier Board -->
+      <div class="tier-board">
+        <div class="tier-row"><div class="tier-label s-tier">S</div><div class="tier-dropzone" data-tier="S"></div></div>
+        <div class="tier-row"><div class="tier-label a-tier">A</div><div class="tier-dropzone" data-tier="A"></div></div>
+        <div class="tier-row"><div class="tier-label b-tier">B</div><div class="tier-dropzone" data-tier="B"></div></div>
+        <div class="tier-row"><div class="tier-label c-tier">C</div><div class="tier-dropzone" data-tier="C"></div></div>
+        <div class="tier-row"><div class="tier-label d-tier">D</div><div class="tier-dropzone" data-tier="D"></div></div>
+        <div class="tier-row"><div class="tier-label e-tier">E</div><div class="tier-dropzone" data-tier="E"></div></div>
+        <div class="tier-row"><div class="tier-label f-tier">F</div><div class="tier-dropzone" data-tier="F"></div></div>
+      </div>
+
+      <!-- Right: Search, Selected Info & Movie Tray Sidebar -->
+      <div class="sidebar-panel">
+        <!-- 1. Search Bar -->
+        <div class="search-section">
+          <input 
+            type="text" 
+            id="movieInput" 
+            placeholder="Search a movie..." 
+            oninput="handleSearchInput()" 
+            onkeydown="if(event.key==='Enter') searchMovie()" 
+          />
+          <button class="btn-primary" onclick="searchMovie()">Search</button>
+        </div>
+
+        <!-- 2. Selected Movie Details (Above Movie Tray) -->
+        <div class="info-card-wrapper">
+          <div class="info-card-header">Selected Movie Details</div>
+          <div class="info-card-content" id="infoCardContent">
+            <div class="info-card-title" id="infoTitle" style="color: var(--text-muted); font-size: 14px; font-weight: 500;">Tap any movie to see details</div>
+            <div class="info-card-tags" id="infoTags" style="display: none;">
+              <span class="badge badge-year" id="infoYear"></span>
+              <span class="badge badge-genre" id="infoGenre"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Movie Tray -->
+        <div class="tray-wrapper">
+          <div class="tray-header">
+            <span>Movie Tray</span>
+            <span id="trayCount">0 items</span>
+          </div>
+          <div class="results-container tier-dropzone" id="searchPool" data-tier="pool"></div>
+        </div>
+      </div>
+
+    </div>
+
   </div>
 
-  <!-- Search Bar -->
-  <div class="search-bar">
-    <input type="text" id="movieInput" placeholder="Search a movie title..." onkeydown="if(event.key==='Enter') searchMovie()" />
-    <button onclick="searchMovie()">Search</button>
+  <!-- Sign In Modal -->
+  <div class="modal-overlay" id="authModal">
+    <div class="modal-card">
+      <h3>Sign In to CineTier</h3>
+      <p>Enter your unique username or account identifier to sync your tier lists seamlessly across your phone and PC.</p>
+      <input type="text" id="usernameInput" placeholder="e.g. febi-tierlist" />
+      <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 8px;">
+        <button class="btn-secondary" onclick="toggleAuthModal(false)">Cancel</button>
+        <button class="btn-primary" onclick="handleAuthSubmit()">Sign In</button>
+      </div>
+    </div>
   </div>
 
-  <div class="status-text">
-    <span>Movie Tray (Double-click any poster to remove):</span>
-    <span id="cloudStatus" style="color: #f39c12; font-weight: bold;">Offline (Local Only)</span>
-  </div>
-
-  <div class="results-container tier-dropzone" id="searchPool" data-tier="pool"></div>
-
-  <!-- Tiers -->
-  <div class="tier-board">
-    <div class="tier-row"><div class="tier-label s-tier">S</div><div class="tier-dropzone" data-tier="S"></div></div>
-    <div class="tier-row"><div class="tier-label a-tier">A</div><div class="tier-dropzone" data-tier="A"></div></div>
-    <div class="tier-row"><div class="tier-label b-tier">B</div><div class="tier-dropzone" data-tier="B"></div></div>
-    <div class="tier-row"><div class="tier-label c-tier">C</div><div class="tier-dropzone" data-tier="C"></div></div>
-    <div class="tier-row"><div class="tier-label d-tier">D</div><div class="tier-dropzone" data-tier="D"></div></div>
-    <div class="tier-row"><div class="tier-label e-tier">E</div><div class="tier-dropzone" data-tier="E"></div></div>
-    <div class="tier-row"><div class="tier-label f-tier">F</div><div class="tier-dropzone" data-tier="F"></div></div>
+  <!-- Triple-Tap Full Details Modal -->
+  <div class="modal-overlay" id="detailModal" onclick="if(event.target===this) toggleDetailModal(false)">
+    <div class="modal-card" style="max-width: 480px;">
+      <div class="movie-detail-card">
+        <img id="modalPoster" src="" class="detail-poster" />
+        <div class="detail-info">
+          <div class="detail-title" id="modalTitle"></div>
+          <div class="detail-meta" id="modalMeta"></div>
+          <div class="detail-sub" id="modalSub"></div>
+          <div class="detail-plot" id="modalPlot"></div>
+        </div>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+        <button class="btn-secondary" style="color: #ff4747;" onclick="deleteActiveMovie()">Delete Poster</button>
+        <button class="btn-primary" onclick="toggleDetailModal(false)">Close</button>
+      </div>
+    </div>
   </div>
 
   <script>
-    // Your exact Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyAiiPKs_FM9RCiHYMNJ2Srlh95Lav_3LUQ",
       authDomain: "movie-tier-app.firebaseapp.com",
@@ -84,31 +558,64 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    let currentKey = localStorage.getItem("active_sync_key") || "";
+    let currentUser = localStorage.getItem("cinetier_user") || "";
     let isRemoteUpdate = false;
+    let selectedMovieId = null;
     const OMDb_KEY = "trilogy";
 
     document.addEventListener("DOMContentLoaded", () => {
       initDropzones();
-      if (currentKey) {
-        document.getElementById("syncKeyInput").value = currentKey;
-        syncWithCloud();
+      document.getElementById("searchPool").innerHTML = "";
+      updateTrayCount();
+
+      if (currentUser) {
+        setLoggedInUI(currentUser);
+        connectCloudSync(currentUser);
       } else {
         loadFromLocal();
       }
     });
 
-    function syncWithCloud() {
-      const key = document.getElementById("syncKeyInput").value.trim();
-      if (!key) return alert("Please enter a custom Sync Key!");
-      currentKey = key;
-      localStorage.setItem("active_sync_key", key);
+    function toggleAuthModal(show) {
+      const modal = document.getElementById("authModal");
+      modal.style.display = show ? "flex" : "none";
+      if (show) document.getElementById("usernameInput").focus();
+    }
 
-      const status = document.getElementById("cloudStatus");
-      status.innerText = `● Connected: ${key}`;
-      status.style.color = "#26de81";
+    function toggleDetailModal(show) {
+      document.getElementById("detailModal").style.display = show ? "flex" : "none";
+    }
 
-      db.collection("tierlists").doc(currentKey).onSnapshot((doc) => {
+    function handleAuthSubmit() {
+      const username = document.getElementById("usernameInput").value.trim();
+      if (!username) return alert("Please enter a username!");
+      
+      currentUser = username;
+      localStorage.setItem("cinetier_user", username);
+      setLoggedInUI(username);
+      connectCloudSync(username);
+      toggleAuthModal(false);
+    }
+
+    function handleLogout() {
+      if (confirm("Sign out of this profile?")) {
+        localStorage.removeItem("cinetier_user");
+        currentUser = "";
+        location.reload();
+      }
+    }
+
+    function setLoggedInUI(username) {
+      document.getElementById("userDisplayName").innerText = username;
+      document.getElementById("statusDot").classList.remove("offline");
+      
+      const authBtn = document.getElementById("authBtn");
+      authBtn.innerText = "Switch / Logout";
+      authBtn.onclick = handleLogout;
+    }
+
+    function connectCloudSync(userKey) {
+      db.collection("tierlists").doc(userKey).onSnapshot((doc) => {
         if (doc.exists) {
           isRemoteUpdate = true;
           renderData(doc.data().board);
@@ -117,38 +624,171 @@
       });
     }
 
-    async function searchMovie() {
+    function handleSearchInput() {
       const query = document.getElementById("movieInput").value.trim();
-      if (!query) return;
+      if (!query) {
+        const pool = document.getElementById("searchPool");
+        pool.innerHTML = "";
+        updateTrayCount();
+      }
+    }
+
+    async function searchMovie() {
+      const input = document.getElementById("movieInput");
+      const query = input.value.trim();
+      const pool = document.getElementById("searchPool");
+
+      if (!query) {
+        pool.innerHTML = "";
+        updateTrayCount();
+        return;
+      }
 
       const res = await fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(query)}&apikey=${OMDb_KEY}`);
       const data = await res.json();
-      const pool = document.getElementById("searchPool");
+
+      pool.innerHTML = "";
 
       if (data.Search) {
         data.Search.forEach(movie => {
           if (movie.Poster && movie.Poster !== "N/A" && !document.getElementById(movie.imdbID)) {
-            const card = createPoster(movie.imdbID, movie.Title, movie.Poster);
+            const card = createPoster(movie.imdbID, movie.Title, movie.Poster, movie.Year);
             pool.appendChild(card);
           }
         });
-        saveState();
       }
+      updateTrayCount();
     }
 
-    function createPoster(id, title, posterUrl) {
+    function createPoster(id, title, posterUrl, year = "", genre = "") {
       const img = document.createElement("img");
       img.src = posterUrl;
       img.alt = title;
-      img.title = `${title} (Double-click to remove)`;
       img.className = "poster-card";
       img.draggable = true;
       img.id = id;
       img.dataset.title = title;
+      img.dataset.year = year;
+      img.dataset.genre = genre;
 
-      img.addEventListener("dragstart", (e) => e.dataTransfer.setData("text/plain", img.id));
-      img.addEventListener("dblclick", () => { img.remove(); saveState(); });
+      let isDragging = false;
+      let tapCount = 0;
+      let tapTimer = null;
+
+      img.addEventListener("dragstart", (e) => {
+        isDragging = true;
+        clearTimeout(tapTimer);
+        tapCount = 0;
+        e.dataTransfer.setData("text/plain", img.id);
+      });
+
+      img.addEventListener("dragend", () => {
+        setTimeout(() => isDragging = false, 150);
+      });
+
+      img.addEventListener("click", (e) => {
+        if (isDragging) return;
+
+        tapCount++;
+
+        if (tapCount === 1) {
+          tapTimer = setTimeout(() => {
+            updateInlineInfoCard(id, img);
+            tapCount = 0;
+          }, 280);
+        } else if (tapCount === 2) {
+          clearTimeout(tapTimer);
+          tapTimer = setTimeout(() => {
+            img.remove();
+            clearInlineInfoCardIfMatches(id);
+            updateTrayCount();
+            saveState();
+            tapCount = 0;
+          }, 260);
+        } else if (tapCount >= 3) {
+          clearTimeout(tapTimer);
+          tapCount = 0;
+          showMovieDetails(id, title, posterUrl, img.dataset.year);
+        }
+      });
+
       return img;
+    }
+
+    async function updateInlineInfoCard(id, imgElement) {
+      const infoTitle = document.getElementById("infoTitle");
+      const infoYear = document.getElementById("infoYear");
+      const infoGenre = document.getElementById("infoGenre");
+      const infoTags = document.getElementById("infoTags");
+
+      infoTitle.innerText = imgElement.dataset.title;
+      infoTitle.style.color = "#fff";
+      infoTitle.style.fontSize = "16px";
+      infoTitle.style.fontWeight = "800";
+      
+      infoYear.innerText = imgElement.dataset.year || "Year: N/A";
+      infoGenre.innerText = imgElement.dataset.genre ? imgElement.dataset.genre : "Loading Genre...";
+      infoTags.style.display = "flex";
+
+      if (!imgElement.dataset.genre) {
+        try {
+          const res = await fetch(`https://www.omdbapi.com/?i=${id}&apikey=${OMDb_KEY}`);
+          const data = await res.json();
+          if (data.Response === "True") {
+            imgElement.dataset.genre = data.Genre;
+            imgElement.dataset.year = data.Year;
+            infoYear.innerText = data.Year;
+            infoGenre.innerText = data.Genre;
+            saveState();
+          }
+        } catch (err) {
+          infoGenre.innerText = "Genre: N/A";
+        }
+      }
+    }
+
+    function clearInlineInfoCardIfMatches(id) {
+      const infoTitle = document.getElementById("infoTitle");
+      const infoTags = document.getElementById("infoTags");
+      infoTitle.innerText = "Tap any movie to see details";
+      infoTitle.style.color = "var(--text-muted)";
+      infoTitle.style.fontSize = "14px";
+      infoTitle.style.fontWeight = "500";
+      infoTags.style.display = "none";
+    }
+
+    async function showMovieDetails(id, fallbackTitle, fallbackPoster, fallbackYear) {
+      selectedMovieId = id;
+      document.getElementById("modalTitle").innerText = fallbackTitle;
+      document.getElementById("modalPoster").src = fallbackPoster;
+      document.getElementById("modalMeta").innerText = fallbackYear ? `Year: ${fallbackYear}` : "Loading info...";
+      document.getElementById("modalSub").innerText = "";
+      document.getElementById("modalPlot").innerText = "";
+      toggleDetailModal(true);
+
+      try {
+        const res = await fetch(`https://www.omdbapi.com/?i=${id}&apikey=${OMDb_KEY}`);
+        const data = await res.json();
+        if (data.Response === "True") {
+          document.getElementById("modalTitle").innerText = data.Title;
+          document.getElementById("modalMeta").innerText = `${data.Year} • ${data.Runtime} • ⭐ ${data.imdbRating}`;
+          document.getElementById("modalSub").innerText = `Genre: ${data.Genre} | Director: ${data.Director}`;
+          document.getElementById("modalPlot").innerText = data.Plot !== "N/A" ? data.Plot : "";
+        }
+      } catch (err) {
+        console.error("Failed to load details", err);
+      }
+    }
+
+    function deleteActiveMovie() {
+      if (selectedMovieId) {
+        const el = document.getElementById(selectedMovieId);
+        if (el) el.remove();
+        clearInlineInfoCardIfMatches(selectedMovieId);
+        toggleDetailModal(false);
+        updateTrayCount();
+        saveState();
+      }
     }
 
     function initDropzones() {
@@ -162,18 +802,31 @@
           const draggedCard = document.getElementById(id);
           if (draggedCard) {
             zone.appendChild(draggedCard);
+            updateTrayCount();
             saveState();
           }
         });
       });
     }
 
+    function updateTrayCount() {
+      const count = document.getElementById("searchPool").querySelectorAll(".poster-card").length;
+      document.getElementById("trayCount").innerText = `${count} item${count === 1 ? '' : 's'}`;
+    }
+
     function getStateObject() {
       const state = {};
-      document.querySelectorAll(".tier-dropzone").forEach(zone => {
-        state[zone.dataset.tier] = [];
+      document.querySelectorAll(".tier-board .tier-dropzone").forEach(zone => {
+        const tier = zone.dataset.tier;
+        state[tier] = [];
         zone.querySelectorAll(".poster-card").forEach(card => {
-          state[zone.dataset.tier].push({ id: card.id, title: card.dataset.title, poster: card.src });
+          state[tier].push({ 
+            id: card.id, 
+            title: card.dataset.title, 
+            poster: card.src,
+            year: card.dataset.year || "",
+            genre: card.dataset.genre || ""
+          });
         });
       });
       return state;
@@ -182,26 +835,27 @@
     function saveState() {
       if (isRemoteUpdate) return;
       const state = getStateObject();
-      localStorage.setItem("movie_tier_list_backup", JSON.stringify(state));
+      localStorage.setItem("cinetier_backup", JSON.stringify(state));
 
-      if (db && currentKey) {
-        db.collection("tierlists").doc(currentKey).set({ board: state });
+      if (db && currentUser) {
+        db.collection("tierlists").doc(currentUser).set({ board: state });
       }
     }
 
     function renderData(state) {
       if (!state) return;
       Object.keys(state).forEach(tier => {
-        const zone = document.querySelector(`.tier-dropzone[data-tier="${tier}"]`);
+        if (tier === "pool") return;
+        const zone = document.querySelector(`.tier-board .tier-dropzone[data-tier="${tier}"]`);
         if (zone) {
           zone.innerHTML = "";
-          state[tier].forEach(m => zone.appendChild(createPoster(m.id, m.title, m.poster)));
+          state[tier].forEach(m => zone.appendChild(createPoster(m.id, m.title, m.poster, m.year, m.genre)));
         }
       });
     }
 
     function loadFromLocal() {
-      const local = localStorage.getItem("movie_tier_list_backup");
+      const local = localStorage.getItem("cinetier_backup");
       if (local) renderData(JSON.parse(local));
     }
   </script>
