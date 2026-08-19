@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cloud Movie Tier List</title>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: #121212; color: #fff; padding: 16px; display: flex; flex-direction: column; align-items: center; }
+    
+    .sync-bar { display: flex; gap: 8px; width: 100%; max-width: 850px; background: #1c1c1c; padding: 12px; border-radius: 8px; margin-bottom: 12px; align-items: center; border: 1px solid #333; }
+    .search-bar { display: flex; gap: 8px; width: 100%; max-width: 850px; margin-bottom: 16px; }
+    
+    input[type="text"] { flex: 1; padding: 10px 14px; border-radius: 6px; border: 1px solid #444; background: #242424; color: white; font-size: 15px; }
+    button { padding: 10px 18px; background: #e50914; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; }
+    button.sync-btn { background: #2f80ed; }
+    button:hover { opacity: 0.9; }
+
+    .status-text { width: 100%; max-width: 850px; font-size: 13px; color: #aaa; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+    .results-container { display: flex; gap: 10px; overflow-x: auto; width: 100%; max-width: 850px; min-height: 115px; background: #181818; padding: 10px; border-radius: 8px; margin-bottom: 16px; border: 1px dashed #444; align-items: center; }
+
+    /* Tier Board */
+    .tier-board { width: 100%; max-width: 850px; border: 3px solid #222; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; gap: 2px; background: #1a1a1a; }
+    .tier-row { display: flex; min-height: 105px; background: #262626; }
+    .tier-label { width: 80px; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 800; color: #111; user-select: none; flex-shrink: 0; }
+    .tier-dropzone { flex: 1; display: flex; flex-wrap: wrap; gap: 8px; padding: 8px; min-height: 105px; align-items: center; }
+
+    .s-tier { background: #ff4747; } .a-tier { background: #ff9f43; } .b-tier { background: #fed330; }
+    .c-tier { background: #26de81; } .d-tier { background: #2bcbba; } .e-tier { background: #a55eea; } .f-tier { background: #ff52d9; }
+
+    .poster-card { width: 65px; height: 95px; object-fit: cover; border-radius: 4px; cursor: grab; user-select: none; }
+    .poster-card:active { opacity: 0.5; }
+    .drag-over { background: #383838 !important; }
+  </style>
+</head>
+<body>
+
+  <!-- Cloud Sync Bar -->
+  <div class="sync-bar">
+    <span style="font-size: 14px; font-weight: bold; white-space: nowrap;">Sync Key:</span>
+    <input type="text" id="syncKeyInput" placeholder="Choose a passkey (e.g. febi-movies-77)" />
+    <button class="sync-btn" onclick="syncWithCloud()">Connect Cloud</button>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="search-bar">
+    <input type="text" id="movieInput" placeholder="Search a movie title..." onkeydown="if(event.key==='Enter') searchMovie()" />
+    <button onclick="searchMovie()">Search</button>
+  </div>
+
+  <div class="status-text">
+    <span>Movie Tray (Double-click any poster to remove):</span>
+    <span id="cloudStatus" style="color: #f39c12; font-weight: bold;">Offline (Local Only)</span>
+  </div>
+
+  <div class="results-container tier-dropzone" id="searchPool" data-tier="pool"></div>
+
+  <!-- Tiers -->
+  <div class="tier-board">
+    <div class="tier-row"><div class="tier-label s-tier">S</div><div class="tier-dropzone" data-tier="S"></div></div>
+    <div class="tier-row"><div class="tier-label a-tier">A</div><div class="tier-dropzone" data-tier="A"></div></div>
+    <div class="tier-row"><div class="tier-label b-tier">B</div><div class="tier-dropzone" data-tier="B"></div></div>
+    <div class="tier-row"><div class="tier-label c-tier">C</div><div class="tier-dropzone" data-tier="C"></div></div>
+    <div class="tier-row"><div class="tier-label d-tier">D</div><div class="tier-dropzone" data-tier="D"></div></div>
+    <div class="tier-row"><div class="tier-label e-tier">E</div><div class="tier-dropzone" data-tier="E"></div></div>
+    <div class="tier-row"><div class="tier-label f-tier">F</div><div class="tier-dropzone" data-tier="F"></div></div>
+  </div>
+
+  <script>
+    // Your exact Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAiiPKs_FM9RCiHYMNJ2Srlh95Lav_3LUQ",
+      authDomain: "movie-tier-app.firebaseapp.com",
+      projectId: "movie-tier-app",
+      storageBucket: "movie-tier-app.firebasestorage.app",
+      messagingSenderId: "367793831498",
+      appId: "1:367793831498:web:3e60949a51f243bf92f0b3",
+      measurementId: "G-HHBCELT29Z"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let currentKey = localStorage.getItem("active_sync_key") || "";
+    let isRemoteUpdate = false;
+    const OMDb_KEY = "trilogy";
+
+    document.addEventListener("DOMContentLoaded", () => {
+      initDropzones();
+      if (currentKey) {
+        document.getElementById("syncKeyInput").value = currentKey;
+        syncWithCloud();
+      } else {
+        loadFromLocal();
+      }
+    });
+
+    function syncWithCloud() {
+      const key = document.getElementById("syncKeyInput").value.trim();
+      if (!key) return alert("Please enter a custom Sync Key!");
+      currentKey = key;
+      localStorage.setItem("active_sync_key", key);
+
+      const status = document.getElementById("cloudStatus");
+      status.innerText = `● Connected: ${key}`;
+      status.style.color = "#26de81";
+
+      db.collection("tierlists").doc(currentKey).onSnapshot((doc) => {
+        if (doc.exists) {
+          isRemoteUpdate = true;
+          renderData(doc.data().board);
+          isRemoteUpdate = false;
+        }
+      });
+    }
+
+    async function searchMovie() {
+      const query = document.getElementById("movieInput").value.trim();
+      if (!query) return;
+
+      const res = await fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(query)}&apikey=${OMDb_KEY}`);
+      const data = await res.json();
+      const pool = document.getElementById("searchPool");
+
+      if (data.Search) {
+        data.Search.forEach(movie => {
+          if (movie.Poster && movie.Poster !== "N/A" && !document.getElementById(movie.imdbID)) {
+            const card = createPoster(movie.imdbID, movie.Title, movie.Poster);
+            pool.appendChild(card);
+          }
+        });
+        saveState();
+      }
+    }
+
+    function createPoster(id, title, posterUrl) {
+      const img = document.createElement("img");
+      img.src = posterUrl;
+      img.alt = title;
+      img.title = `${title} (Double-click to remove)`;
+      img.className = "poster-card";
+      img.draggable = true;
+      img.id = id;
+      img.dataset.title = title;
+
+      img.addEventListener("dragstart", (e) => e.dataTransfer.setData("text/plain", img.id));
+      img.addEventListener("dblclick", () => { img.remove(); saveState(); });
+      return img;
+    }
+
+    function initDropzones() {
+      document.querySelectorAll(".tier-dropzone").forEach(zone => {
+        zone.addEventListener("dragover", (e) => { e.preventDefault(); zone.classList.add("drag-over"); });
+        zone.addEventListener("dragleave", () => zone.classList.remove("drag-over"));
+        zone.addEventListener("drop", (e) => {
+          e.preventDefault();
+          zone.classList.remove("drag-over");
+          const id = e.dataTransfer.getData("text/plain");
+          const draggedCard = document.getElementById(id);
+          if (draggedCard) {
+            zone.appendChild(draggedCard);
+            saveState();
+          }
+        });
+      });
+    }
+
+    function getStateObject() {
+      const state = {};
+      document.querySelectorAll(".tier-dropzone").forEach(zone => {
+        state[zone.dataset.tier] = [];
+        zone.querySelectorAll(".poster-card").forEach(card => {
+          state[zone.dataset.tier].push({ id: card.id, title: card.dataset.title, poster: card.src });
+        });
+      });
+      return state;
+    }
+
+    function saveState() {
+      if (isRemoteUpdate) return;
+      const state = getStateObject();
+      localStorage.setItem("movie_tier_list_backup", JSON.stringify(state));
+
+      if (db && currentKey) {
+        db.collection("tierlists").doc(currentKey).set({ board: state });
+      }
+    }
+
+    function renderData(state) {
+      if (!state) return;
+      Object.keys(state).forEach(tier => {
+        const zone = document.querySelector(`.tier-dropzone[data-tier="${tier}"]`);
+        if (zone) {
+          zone.innerHTML = "";
+          state[tier].forEach(m => zone.appendChild(createPoster(m.id, m.title, m.poster)));
+        }
+      });
+    }
+
+    function loadFromLocal() {
+      const local = localStorage.getItem("movie_tier_list_backup");
+      if (local) renderData(JSON.parse(local));
+    }
+  </script>
+</body>
+</html>
