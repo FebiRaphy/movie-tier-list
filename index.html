@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CineTier • Movie Tier List</title>
   
   <!-- Fonts -->
@@ -38,12 +38,11 @@
       flex-direction: column;
       align-items: center;
       padding: 16px 12px;
-      overflow-x: auto;
     }
 
     .app-container {
       width: 100%;
-      max-width: 1300px;
+      max-width: 1200px;
       display: flex;
       flex-direction: column;
       gap: 14px;
@@ -59,8 +58,7 @@
       border: 1px solid var(--card-border);
       padding: 12px 18px;
       border-radius: 14px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-      min-height: 56px;
+      min-height: 54px;
     }
 
     .brand {
@@ -109,7 +107,6 @@
       box-shadow: 0 0 6px #f59e0b;
     }
 
-    /* Buttons */
     button {
       font-family: inherit;
       font-weight: 700;
@@ -118,7 +115,6 @@
       border-radius: 8px;
       border: none;
       cursor: pointer;
-      transition: all 0.2s ease;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -127,7 +123,6 @@
     .btn-primary {
       background: linear-gradient(135deg, #ff334b, #e50914);
       color: #fff;
-      box-shadow: 0 4px 14px var(--accent-glow);
     }
 
     .btn-secondary {
@@ -136,12 +131,24 @@
       border: 1px solid var(--card-border);
     }
 
-    /* Strict Side-by-Side Split Layout (Preserved on all devices) */
+    /* Content Layout */
     .content-layout {
       display: grid;
-      grid-template-columns: 1fr 300px;
-      gap: 12px;
+      grid-template-columns: 1fr 340px;
+      gap: 16px;
       align-items: start;
+    }
+
+    /* Full-width stack on Mobile */
+    @media (max-width: 850px) {
+      .content-layout {
+        grid-template-columns: 1fr;
+      }
+      .tray-wrapper .results-container {
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        min-height: 90px !important;
+      }
     }
 
     /* Tier Board */
@@ -153,21 +160,20 @@
       flex-direction: column;
       gap: 2px;
       background: #121318;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
     }
 
     .tier-row {
       display: flex;
-      min-height: 85px;
+      min-height: 80px;
       background: var(--card-bg);
     }
 
     .tier-label {
-      width: 55px;
+      width: 60px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 800;
       color: #0c0d12;
       user-select: none;
@@ -178,9 +184,9 @@
       flex: 1;
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
-      padding: 6px 8px;
-      min-height: 85px;
+      gap: 8px;
+      padding: 6px 10px;
+      min-height: 80px;
       align-items: center;
     }
 
@@ -193,19 +199,19 @@
     .e-tier { background: linear-gradient(135deg, #8a2387, #e94057); }
     .f-tier { background: linear-gradient(135deg, #ec008c, #fc6767); }
 
-    /* Right Sidebar Panel */
+    /* Right Sidebar Panel / Mobile Bottom Dock */
     .sidebar-panel {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
     }
 
     .search-section {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      padding: 6px;
+      padding: 6px 8px;
       border-radius: 12px;
     }
 
@@ -215,19 +221,19 @@
       border: none;
       outline: none;
       color: #fff;
-      font-size: 13px;
-      padding-left: 8px;
+      font-size: 14px;
+      padding-left: 6px;
       min-width: 0;
     }
 
     .search-section input::placeholder { color: var(--text-muted); }
 
-    /* Single-Tap Info Section */
+    /* Single-Tap Info Card */
     .info-card-wrapper {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 12px;
-      padding: 10px 12px;
+      padding: 10px 14px;
       display: flex;
       flex-direction: column;
       gap: 4px;
@@ -241,14 +247,8 @@
       color: var(--text-muted);
     }
 
-    .info-card-content {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-
     .info-card-title {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 700;
       color: #fff;
       line-height: 1.2;
@@ -263,36 +263,28 @@
     }
 
     .badge {
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 700;
       padding: 2px 6px;
       border-radius: 5px;
     }
 
-    .badge-year {
-      background: var(--accent-red);
-      color: #fff;
-    }
-
-    .badge-genre {
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--text-main);
-      border: 1px solid var(--card-border);
-    }
+    .badge-year { background: var(--accent-red); color: #fff; }
+    .badge-genre { background: rgba(255, 255, 255, 0.08); color: var(--text-main); border: 1px solid var(--card-border); }
 
     /* Movie Tray */
     .tray-wrapper {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 12px;
-      padding: 10px 12px;
+      padding: 12px;
       display: flex;
       flex-direction: column;
       gap: 8px;
     }
 
     .tray-header {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 600;
       color: var(--text-muted);
       display: flex;
@@ -303,63 +295,30 @@
     .results-container {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
+      gap: 8px;
       align-content: flex-start;
       min-height: 100px;
-      max-height: 50vh;
-      overflow-y: auto;
       background: rgba(0, 0, 0, 0.2);
       border-radius: 8px;
-      padding: 6px;
+      padding: 8px;
       border: 1px dashed var(--card-border);
     }
 
-    /* Scaled Movie Posters for Multi-Device Balance */
+    /* Poster Card */
     .poster-card {
-      width: 48px;
-      height: 72px;
+      width: 52px;
+      height: 76px;
       object-fit: cover;
-      border-radius: 5px;
+      border-radius: 6px;
       cursor: grab;
       user-select: none;
       touch-action: none;
+      flex-shrink: 0;
       box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
-      transition: transform 0.15s ease;
     }
 
-    .poster-card:active {
-      transform: scale(0.95);
-      opacity: 0.7;
-    }
-
-    .drag-over {
-      background: rgba(255, 255, 255, 0.08) !important;
-    }
-
-    /* Mobile Fine-Tuning */
-    @media (max-width: 600px) {
-      .content-layout {
-        grid-template-columns: 1.2fr 1fr;
-        gap: 8px;
-      }
-      .tier-label {
-        width: 38px;
-        font-size: 16px;
-      }
-      .tier-row {
-        min-height: 75px;
-      }
-      .poster-card {
-        width: 42px;
-        height: 62px;
-      }
-      .brand {
-        font-size: 17px;
-      }
-      .user-pill {
-        display: none; /* Streamlines header on small screens */
-      }
-    }
+    .poster-card:active { opacity: 0.7; }
+    .drag-over { background: rgba(255, 255, 255, 0.08) !important; }
 
     /* Modals */
     .modal-overlay {
@@ -381,7 +340,6 @@
       width: 100%;
       max-width: 400px;
       padding: 20px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
       display: flex;
       flex-direction: column;
       gap: 14px;
@@ -400,47 +358,13 @@
       outline: none;
     }
 
-    .modal-card input:focus { border-color: var(--accent-red); }
-
-    .movie-detail-card {
-      display: flex;
-      gap: 14px;
-    }
-    .detail-poster {
-      width: 90px;
-      height: 130px;
-      object-fit: cover;
-      border-radius: 6px;
-      flex-shrink: 0;
-    }
-    .detail-info {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .detail-title {
-      font-size: 16px;
-      font-weight: 800;
-      color: #fff;
-      line-height: 1.2;
-    }
-    .detail-meta {
-      font-size: 12px;
-      color: var(--accent-red);
-      font-weight: 700;
-    }
-    .detail-sub {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-    .detail-plot {
-      font-size: 12px;
-      color: #d1d5db;
-      line-height: 1.4;
-      margin-top: 4px;
-      max-height: 100px;
-      overflow-y: auto;
-    }
+    .movie-detail-card { display: flex; gap: 14px; }
+    .detail-poster { width: 90px; height: 130px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
+    .detail-info { display: flex; flex-direction: column; gap: 4px; }
+    .detail-title { font-size: 16px; font-weight: 800; color: #fff; line-height: 1.2; }
+    .detail-meta { font-size: 12px; color: var(--accent-red); font-weight: 700; }
+    .detail-sub { font-size: 11px; color: var(--text-muted); }
+    .detail-plot { font-size: 12px; color: #d1d5db; line-height: 1.4; margin-top: 4px; max-height: 100px; overflow-y: auto; }
   </style>
 </head>
 <body>
@@ -461,10 +385,10 @@
       </div>
     </header>
 
-    <!-- Side-by-Side Split Layout -->
+    <!-- Main Content Layout -->
     <div class="content-layout">
 
-      <!-- Left: Tier Board -->
+      <!-- Tier Board -->
       <div class="tier-board">
         <div class="tier-row"><div class="tier-label s-tier">S</div><div class="tier-dropzone" data-tier="S"></div></div>
         <div class="tier-row"><div class="tier-label a-tier">A</div><div class="tier-dropzone" data-tier="A"></div></div>
@@ -475,7 +399,7 @@
         <div class="tier-row"><div class="tier-label f-tier">F</div><div class="tier-dropzone" data-tier="F"></div></div>
       </div>
 
-      <!-- Right: Search, Details & Tray Sidebar -->
+      <!-- Search, Details & Tray -->
       <div class="sidebar-panel">
         <div class="search-section">
           <input 
@@ -491,7 +415,7 @@
         <div class="info-card-wrapper">
           <div class="info-card-header">Selected Movie</div>
           <div class="info-card-content" id="infoCardContent">
-            <div class="info-card-title" id="infoTitle" style="color: var(--text-muted); font-size: 12px; font-weight: 500;">Tap any movie to see details</div>
+            <div class="info-card-title" id="infoTitle" style="color: var(--text-muted); font-size: 13px; font-weight: 500;">Tap any movie to see details</div>
             <div class="info-card-tags" id="infoTags" style="display: none;">
               <span class="badge badge-year" id="infoYear"></span>
               <span class="badge badge-genre" id="infoGenre"></span>
@@ -675,7 +599,7 @@
       let tapCount = 0;
       let tapTimer = null;
 
-      // HTML5 Drag
+      // Desktop Drag
       img.addEventListener("dragstart", (e) => {
         isDragging = true;
         clearTimeout(tapTimer);
@@ -687,7 +611,7 @@
         setTimeout(() => isDragging = false, 150);
       });
 
-      // Mobile Touch Drag Implementation
+      // Mobile Touch Drag
       let touchStartX = 0, touchStartY = 0, clone = null;
 
       img.addEventListener("touchstart", (e) => {
@@ -707,13 +631,13 @@
           if (!clone) {
             clone = img.cloneNode(true);
             clone.style.position = "fixed";
-            clone.style.opacity = "0.75";
+            clone.style.opacity = "0.8";
             clone.style.pointerEvents = "none";
             clone.style.zIndex = "1000";
             document.body.appendChild(clone);
           }
-          clone.style.left = `${touch.clientX - 25}px`;
-          clone.style.top = `${touch.clientY - 35}px`;
+          clone.style.left = `${touch.clientX - 26}px`;
+          clone.style.top = `${touch.clientY - 38}px`;
         }
       }, { passive: true });
 
@@ -734,7 +658,7 @@
         }
       });
 
-      // Gesture Router
+      // 1-Tap / 2-Tap / 3-Tap Gestures
       img.addEventListener("click", (e) => {
         if (isDragging) return;
 
@@ -772,7 +696,6 @@
 
       infoTitle.innerText = imgElement.dataset.title;
       infoTitle.style.color = "#fff";
-      infoTitle.style.fontSize = "13px";
       infoTitle.style.fontWeight = "700";
       
       infoYear.innerText = imgElement.dataset.year || "Year: N/A";
@@ -801,7 +724,6 @@
       const infoTags = document.getElementById("infoTags");
       infoTitle.innerText = "Tap any movie to see details";
       infoTitle.style.color = "var(--text-muted)";
-      infoTitle.style.fontSize = "12px";
       infoTitle.style.fontWeight = "500";
       infoTags.style.display = "none";
     }
