@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>CineTier • Movie Tier List</title>
   
   <!-- Fonts -->
@@ -37,7 +37,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 24px 16px;
+      padding: 16px 12px;
+      overflow-x: auto;
     }
 
     .app-container {
@@ -45,7 +46,7 @@
       max-width: 1300px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 14px;
     }
 
     /* Top Navigation */
@@ -56,17 +57,17 @@
       align-items: center;
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      padding: 16px 24px;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-      min-height: 68px;
+      padding: 12px 18px;
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+      min-height: 56px;
     }
 
     .brand {
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 24px;
+      font-size: 20px;
       font-weight: 800;
       letter-spacing: -0.5px;
     }
@@ -80,41 +81,41 @@
     .auth-badge {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
     }
 
     .user-pill {
-      font-size: 13px;
+      font-size: 11px;
       font-weight: 600;
       background: rgba(255, 255, 255, 0.06);
-      padding: 6px 14px;
+      padding: 5px 10px;
       border-radius: 999px;
       border: 1px solid var(--card-border);
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }
 
     .status-dot {
-      width: 8px;
-      height: 8px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
       background: #10b981;
-      box-shadow: 0 0 8px #10b981;
+      box-shadow: 0 0 6px #10b981;
     }
 
     .status-dot.offline {
       background: #f59e0b;
-      box-shadow: 0 0 8px #f59e0b;
+      box-shadow: 0 0 6px #f59e0b;
     }
 
     /* Buttons */
     button {
       font-family: inherit;
       font-weight: 700;
-      font-size: 14px;
-      padding: 10px 18px;
-      border-radius: 10px;
+      font-size: 12px;
+      padding: 8px 14px;
+      border-radius: 8px;
       border: none;
       cursor: pointer;
       transition: all 0.2s ease;
@@ -126,64 +127,47 @@
     .btn-primary {
       background: linear-gradient(135deg, #ff334b, #e50914);
       color: #fff;
-      box-shadow: 0 4px 16px var(--accent-glow);
+      box-shadow: 0 4px 14px var(--accent-glow);
     }
-    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(255, 51, 75, 0.4); }
 
     .btn-secondary {
       background: rgba(255, 255, 255, 0.06);
       color: #f3f4f6;
       border: 1px solid var(--card-border);
     }
-    .btn-secondary:hover { background: rgba(255, 255, 255, 0.12); }
 
-    /* Content Layout */
+    /* Strict Side-by-Side Split Layout (Preserved on all devices) */
     .content-layout {
       display: grid;
-      grid-template-columns: 1fr 340px;
-      gap: 20px;
+      grid-template-columns: 1fr 300px;
+      gap: 12px;
       align-items: start;
-    }
-
-    @media (max-width: 900px) {
-      header {
-        flex-direction: column;
-        gap: 12px;
-        padding: 16px;
-      }
-      .brand {
-        position: static;
-        transform: none;
-      }
-      .content-layout {
-        grid-template-columns: 1fr;
-      }
     }
 
     /* Tier Board */
     .tier-board {
       border: 1px solid var(--card-border);
-      border-radius: 16px;
+      border-radius: 14px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
       gap: 2px;
       background: #121318;
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
     }
 
     .tier-row {
       display: flex;
-      min-height: 105px;
+      min-height: 85px;
       background: var(--card-bg);
     }
 
     .tier-label {
-      width: 85px;
+      width: 55px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 26px;
+      font-size: 20px;
       font-weight: 800;
       color: #0c0d12;
       user-select: none;
@@ -194,9 +178,9 @@
       flex: 1;
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
-      padding: 10px 14px;
-      min-height: 105px;
+      gap: 6px;
+      padding: 6px 8px;
+      min-height: 85px;
       align-items: center;
     }
 
@@ -213,17 +197,16 @@
     .sidebar-panel {
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 10px;
     }
 
     .search-section {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      padding: 8px;
-      border-radius: 14px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      padding: 6px;
+      border-radius: 12px;
     }
 
     .search-section input {
@@ -232,8 +215,8 @@
       border: none;
       outline: none;
       color: #fff;
-      font-size: 14px;
-      padding-left: 10px;
+      font-size: 13px;
+      padding-left: 8px;
       min-width: 0;
     }
 
@@ -243,16 +226,15 @@
     .info-card-wrapper {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 16px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      padding: 10px 12px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 4px;
     }
 
     .info-card-header {
-      font-size: 12px;
+      font-size: 10px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -262,12 +244,12 @@
     .info-card-content {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 3px;
     }
 
     .info-card-title {
-      font-size: 16px;
-      font-weight: 800;
+      font-size: 13px;
+      font-weight: 700;
       color: #fff;
       line-height: 1.2;
     }
@@ -276,15 +258,15 @@
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 8px;
-      margin-top: 4px;
+      gap: 6px;
+      margin-top: 2px;
     }
 
     .badge {
-      font-size: 12px;
+      font-size: 10px;
       font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 6px;
+      padding: 2px 6px;
+      border-radius: 5px;
     }
 
     .badge-year {
@@ -298,20 +280,19 @@
       border: 1px solid var(--card-border);
     }
 
-    /* Dynamic Auto-Expanding Tray */
+    /* Movie Tray */
     .tray-wrapper {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 16px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      padding: 10px 12px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 8px;
     }
 
     .tray-header {
-      font-size: 13px;
+      font-size: 11px;
       font-weight: 600;
       color: var(--text-muted);
       display: flex;
@@ -322,39 +303,62 @@
     .results-container {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 6px;
       align-content: flex-start;
-      min-height: 120px;
+      min-height: 100px;
+      max-height: 50vh;
+      overflow-y: auto;
       background: rgba(0, 0, 0, 0.2);
-      border-radius: 10px;
-      padding: 10px;
+      border-radius: 8px;
+      padding: 6px;
       border: 1px dashed var(--card-border);
     }
 
-    /* Poster Card */
+    /* Scaled Movie Posters for Multi-Device Balance */
     .poster-card {
-      width: 62px;
-      height: 90px;
+      width: 48px;
+      height: 72px;
       object-fit: cover;
-      border-radius: 6px;
+      border-radius: 5px;
       cursor: grab;
       user-select: none;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
-    }
-
-    .poster-card:hover {
-      transform: translateY(-3px) scale(1.04);
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+      touch-action: none;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+      transition: transform 0.15s ease;
     }
 
     .poster-card:active {
-      cursor: grabbing;
-      opacity: 0.5;
+      transform: scale(0.95);
+      opacity: 0.7;
     }
 
     .drag-over {
-      background: rgba(255, 255, 255, 0.05) !important;
+      background: rgba(255, 255, 255, 0.08) !important;
+    }
+
+    /* Mobile Fine-Tuning */
+    @media (max-width: 600px) {
+      .content-layout {
+        grid-template-columns: 1.2fr 1fr;
+        gap: 8px;
+      }
+      .tier-label {
+        width: 38px;
+        font-size: 16px;
+      }
+      .tier-row {
+        min-height: 75px;
+      }
+      .poster-card {
+        width: 42px;
+        height: 62px;
+      }
+      .brand {
+        font-size: 17px;
+      }
+      .user-pill {
+        display: none; /* Streamlines header on small screens */
+      }
     }
 
     /* Modals */
@@ -373,69 +377,68 @@
     .modal-card {
       background: #181a20;
       border: 1px solid var(--card-border);
-      border-radius: 20px;
+      border-radius: 18px;
       width: 100%;
-      max-width: 420px;
-      padding: 24px;
+      max-width: 400px;
+      padding: 20px;
       box-shadow: 0 20px 50px rgba(0,0,0,0.6);
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
     }
 
-    .modal-card h3 { font-size: 20px; font-weight: 800; }
-    .modal-card p { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+    .modal-card h3 { font-size: 18px; font-weight: 800; }
+    .modal-card p { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
 
     .modal-card input {
       background: #101116;
       border: 1px solid var(--card-border);
-      padding: 12px 14px;
-      border-radius: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
       color: #fff;
-      font-size: 15px;
+      font-size: 14px;
       outline: none;
     }
 
     .modal-card input:focus { border-color: var(--accent-red); }
 
-    /* Movie Detail Modal */
     .movie-detail-card {
       display: flex;
-      gap: 18px;
+      gap: 14px;
     }
     .detail-poster {
-      width: 110px;
-      height: 160px;
+      width: 90px;
+      height: 130px;
       object-fit: cover;
-      border-radius: 8px;
+      border-radius: 6px;
       flex-shrink: 0;
     }
     .detail-info {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 4px;
     }
     .detail-title {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 800;
       color: #fff;
       line-height: 1.2;
     }
     .detail-meta {
-      font-size: 13px;
+      font-size: 12px;
       color: var(--accent-red);
       font-weight: 700;
     }
     .detail-sub {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--text-muted);
     }
     .detail-plot {
-      font-size: 13px;
+      font-size: 12px;
       color: #d1d5db;
       line-height: 1.4;
       margin-top: 4px;
-      max-height: 120px;
+      max-height: 100px;
       overflow-y: auto;
     }
   </style>
@@ -452,13 +455,13 @@
       <div class="auth-badge">
         <div class="user-pill" id="userPill">
           <div class="status-dot offline" id="statusDot"></div>
-          <span id="userDisplayName">Guest (Local)</span>
+          <span id="userDisplayName">Guest</span>
         </div>
         <button class="btn-secondary" id="authBtn" onclick="toggleAuthModal(true)">Sign In</button>
       </div>
     </header>
 
-    <!-- Main Grid -->
+    <!-- Side-by-Side Split Layout -->
     <div class="content-layout">
 
       <!-- Left: Tier Board -->
@@ -472,25 +475,23 @@
         <div class="tier-row"><div class="tier-label f-tier">F</div><div class="tier-dropzone" data-tier="F"></div></div>
       </div>
 
-      <!-- Right: Search, Selected Info & Movie Tray Sidebar -->
+      <!-- Right: Search, Details & Tray Sidebar -->
       <div class="sidebar-panel">
-        <!-- 1. Search Bar -->
         <div class="search-section">
           <input 
             type="text" 
             id="movieInput" 
-            placeholder="Search a movie..." 
+            placeholder="Search movie..." 
             oninput="handleSearchInput()" 
             onkeydown="if(event.key==='Enter') searchMovie()" 
           />
           <button class="btn-primary" onclick="searchMovie()">Search</button>
         </div>
 
-        <!-- 2. Selected Movie Details (Above Movie Tray) -->
         <div class="info-card-wrapper">
-          <div class="info-card-header">Selected Movie Details</div>
+          <div class="info-card-header">Selected Movie</div>
           <div class="info-card-content" id="infoCardContent">
-            <div class="info-card-title" id="infoTitle" style="color: var(--text-muted); font-size: 14px; font-weight: 500;">Tap any movie to see details</div>
+            <div class="info-card-title" id="infoTitle" style="color: var(--text-muted); font-size: 12px; font-weight: 500;">Tap any movie to see details</div>
             <div class="info-card-tags" id="infoTags" style="display: none;">
               <span class="badge badge-year" id="infoYear"></span>
               <span class="badge badge-genre" id="infoGenre"></span>
@@ -498,7 +499,6 @@
           </div>
         </div>
 
-        <!-- 3. Movie Tray -->
         <div class="tray-wrapper">
           <div class="tray-header">
             <span>Movie Tray</span>
@@ -516,18 +516,18 @@
   <div class="modal-overlay" id="authModal">
     <div class="modal-card">
       <h3>Sign In to CineTier</h3>
-      <p>Enter your unique username or account identifier to sync your tier lists seamlessly across your phone and PC.</p>
-      <input type="text" id="usernameInput" placeholder="e.g. febi-tierlist" />
-      <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 8px;">
+      <p>Enter your unique profile username to sync your tier lists seamlessly across all devices.</p>
+      <input type="text" id="usernameInput" placeholder="e.g. febi" />
+      <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 6px;">
         <button class="btn-secondary" onclick="toggleAuthModal(false)">Cancel</button>
         <button class="btn-primary" onclick="handleAuthSubmit()">Sign In</button>
       </div>
     </div>
   </div>
 
-  <!-- Triple-Tap Full Details Modal -->
+  <!-- Details Popup Modal -->
   <div class="modal-overlay" id="detailModal" onclick="if(event.target===this) toggleDetailModal(false)">
-    <div class="modal-card" style="max-width: 480px;">
+    <div class="modal-card">
       <div class="movie-detail-card">
         <img id="modalPoster" src="" class="detail-poster" />
         <div class="detail-info">
@@ -537,8 +537,8 @@
           <div class="detail-plot" id="modalPlot"></div>
         </div>
       </div>
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
-        <button class="btn-secondary" style="color: #ff4747;" onclick="deleteActiveMovie()">Delete Poster</button>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+        <button class="btn-secondary" style="color: #ff4747;" onclick="deleteActiveMovie()">Delete</button>
         <button class="btn-primary" onclick="toggleDetailModal(false)">Close</button>
       </div>
     </div>
@@ -610,7 +610,7 @@
       document.getElementById("statusDot").classList.remove("offline");
       
       const authBtn = document.getElementById("authBtn");
-      authBtn.innerText = "Switch / Logout";
+      authBtn.innerText = "Switch";
       authBtn.onclick = handleLogout;
     }
 
@@ -675,6 +675,7 @@
       let tapCount = 0;
       let tapTimer = null;
 
+      // HTML5 Drag
       img.addEventListener("dragstart", (e) => {
         isDragging = true;
         clearTimeout(tapTimer);
@@ -686,6 +687,54 @@
         setTimeout(() => isDragging = false, 150);
       });
 
+      // Mobile Touch Drag Implementation
+      let touchStartX = 0, touchStartY = 0, clone = null;
+
+      img.addEventListener("touchstart", (e) => {
+        if (e.touches.length > 1) return;
+        const touch = e.touches[0];
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+      }, { passive: true });
+
+      img.addEventListener("touchmove", (e) => {
+        const touch = e.touches[0];
+        const distX = Math.abs(touch.clientX - touchStartX);
+        const distY = Math.abs(touch.clientY - touchStartY);
+
+        if (distX > 10 || distY > 10) {
+          isDragging = true;
+          if (!clone) {
+            clone = img.cloneNode(true);
+            clone.style.position = "fixed";
+            clone.style.opacity = "0.75";
+            clone.style.pointerEvents = "none";
+            clone.style.zIndex = "1000";
+            document.body.appendChild(clone);
+          }
+          clone.style.left = `${touch.clientX - 25}px`;
+          clone.style.top = `${touch.clientY - 35}px`;
+        }
+      }, { passive: true });
+
+      img.addEventListener("touchend", (e) => {
+        if (clone) {
+          clone.remove();
+          clone = null;
+          const touch = e.changedTouches[0];
+          const elemBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+          const dropzone = elemBelow ? elemBelow.closest(".tier-dropzone") : null;
+          
+          if (dropzone) {
+            dropzone.appendChild(img);
+            updateTrayCount();
+            saveState();
+          }
+          setTimeout(() => isDragging = false, 150);
+        }
+      });
+
+      // Gesture Router
       img.addEventListener("click", (e) => {
         if (isDragging) return;
 
@@ -723,8 +772,8 @@
 
       infoTitle.innerText = imgElement.dataset.title;
       infoTitle.style.color = "#fff";
-      infoTitle.style.fontSize = "16px";
-      infoTitle.style.fontWeight = "800";
+      infoTitle.style.fontSize = "13px";
+      infoTitle.style.fontWeight = "700";
       
       infoYear.innerText = imgElement.dataset.year || "Year: N/A";
       infoGenre.innerText = imgElement.dataset.genre ? imgElement.dataset.genre : "Loading Genre...";
@@ -752,7 +801,7 @@
       const infoTags = document.getElementById("infoTags");
       infoTitle.innerText = "Tap any movie to see details";
       infoTitle.style.color = "var(--text-muted)";
-      infoTitle.style.fontSize = "14px";
+      infoTitle.style.fontSize = "12px";
       infoTitle.style.fontWeight = "500";
       infoTags.style.display = "none";
     }
@@ -761,7 +810,7 @@
       selectedMovieId = id;
       document.getElementById("modalTitle").innerText = fallbackTitle;
       document.getElementById("modalPoster").src = fallbackPoster;
-      document.getElementById("modalMeta").innerText = fallbackYear ? `Year: ${fallbackYear}` : "Loading info...";
+      document.getElementById("modalMeta").innerText = fallbackYear ? `Year: ${fallbackYear}` : "Loading...";
       document.getElementById("modalSub").innerText = "";
       document.getElementById("modalPlot").innerText = "";
       toggleDetailModal(true);
